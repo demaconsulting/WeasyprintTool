@@ -1,0 +1,124 @@
+# This workflow annotates the SBOM for the DemaConsulting.WeasyprintTool with
+# build tools, and generates a summary markdown.
+
+
+# Workflow Parameters
+parameters:
+  spdx: pack/_manifest/spdx_2.2/manifest.spdx.json
+  md: pack/_manifest/spdx_2.2/sbom_summary.md
+  wrapper-spdx: manifest.spdx.json
+  weasyprint-version: 0.0
+
+# Steps
+steps:
+
+  # Get the WeasyprintTool version
+- command: get-version
+  displayName: Get WeasyprintTool Version
+  inputs:
+    output: weasyprint-version
+    spdx: ${{ spdx }}
+    name: DemaConsulting.WeasyprintTool
+
+
+  # Rename the Root Package ID
+- command: rename-id
+  displayName: Rename WeasyprintTool Package ID
+  inputs:
+    spdx: ${{ spdx }}
+    old: SPDXRef-RootPackage
+    new: SPDXRef-DemaConsulting-WeasyprintTool-${{ weasyprint-version }}
+
+
+  # Copy DotnetToolWrapper
+- command: copy-package
+  inputs:
+    from: ${{ wrapper-spdx }}
+    to: ${{ spdx }}
+    package: SPDXRef-DemaConsulting-DotnetToolWrapper
+    recursive: true
+    relationships:
+    - type: CONTAINED_BY
+      element: SPDXRef-DemaConsulting-WeasyprintTool-${{ weasyprint-version }}
+      comment: DotnetToolWrapper embedded into DemaConsulting.WeasyprintTool 
+
+
+  # Add Weasyprint Package
+- command: add-package
+  inputs:
+    spdx: ${{ spdx }}
+    package:
+      id: SPDXRef-Package-WeasyPrint-${{ weasyprint-version }}
+      name: WeasyPrint
+      download: NOASSERTION
+      version: ${{ weasyprint-version }}
+      filename: NOASSERTION
+      supplier: NOASSERTION
+      originator: NOASSERTION
+      homepage: https://weasyprint.org/
+      copyright: "Copyright (c) 2011-2021, Simon Sapin and contributors."
+      summary: "WeasyPrint is a smart solution helping web developers to create PDF documents."
+      license: BSD-3-Clause
+      purl: pkg:github/Kozea/WeasyPrint@v${{ weasyprint-version }}
+    relationships:
+    - type: CONTAINED_BY
+      element: SPDXRef-DemaConsulting-WeasyprintTool-${{ weasyprint-version }}
+      comment: WeasyPrint ${{ weasyprint-version }} embedded into DemaConsulting.WeasyprintTool 
+
+
+  # Query the version of nuget
+- command: run-workflow
+  displayName: Query Nuget Version
+  inputs:
+    url: https://raw.githubusercontent.com/demaconsulting/SpdxWorkflows/main/GetNugetVersion.yaml
+    outputs:
+      version: nuget-version
+
+
+  # Add Nuget Package
+- command: run-workflow
+  displayName: Add Nuget Package
+  inputs:
+    url: https://raw.githubusercontent.com/demaconsulting/SpdxWorkflows/main/AddNugetPackage.yaml
+    parameters:
+      spdx: ${{ spdx }}
+      version: ${{ nuget-version }}
+      id: SPDXRef-Package-Nuget-${{ nuget-version }}
+
+
+  # Add Nuget Relationship
+- command: add-relationship
+  displayName: Add Nuget Relationship
+  inputs:
+    spdx: ${{ spdx }}
+    id: SPDXRef-Package-Nuget-${{ nuget-version }}
+    relationships:
+    - type: BUILD_TOOL_OF
+      element: SPDXRef-DemaConsulting-WeasyprintTool-${{ weasyprint-version }}
+      comment: Nuget ${{ nuget-version }} used to package DemaConsulting.WeasyprintTool
+
+
+  # Update the SBOM sha256
+- command: hash
+  displayName: Update WeasyprintTool SBOM sha256
+  inputs:
+    operation: generate
+    algorithm: sha256
+    file: ${{ spdx }}
+
+
+  # Validate the SBOM
+- command: validate
+  displayName: Validate WeasyprintTool SBOM
+  inputs:
+    spdx: ${{ spdx }}
+    ntia: true
+
+
+  # Generate the library summary
+- command: to-markdown
+  displayName: Generate WeasyprintTool SBOM summary
+  inputs:
+    spdx: ${{ spdx }}
+    markdown: ${{ md }}
+    title: WeasyprintTool
