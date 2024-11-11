@@ -1,0 +1,82 @@
+on:
+  workflow_call:
+    inputs:
+      wrapper:
+        required: true
+        type: string
+      weasyprint:
+        required: true
+        type: string
+      version:
+        required: true
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    
+    - uses: actions/checkout@v4
+
+    - name: Setup dotnet 8
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: |
+          8.x          
+
+    - uses: nuget/setup-nuget@v2
+      with:
+        nuget-version: '6.x'
+
+    - name: Restore Tools
+      run: >
+        dotnet tool restore
+
+    - name: Insert Wrapper
+      shell: bash
+      run: |
+        wget https://github.com/demaconsulting/DotnetToolWrapper/releases/download/${{ inputs.wrapper }}/manifest.spdx.json
+        wget https://github.com/demaconsulting/DotnetToolWrapper/releases/download/${{ inputs.wrapper }}/DotnetToolWrapper.zip
+        unzip -o DotnetToolWrapper.zip -d DotnetToolWrapper
+        cp DotnetToolWrapper/net6.0/*.* pack/tools/net6.0/any
+        cp DotnetToolWrapper/net8.0/*.* pack/tools/net8.0/any
+
+    - name: Insert Weasyprint win-x64
+      shell: bash
+      run: |
+        wget https://github.com/Kozea/WeasyPrint/releases/download/v${{ inputs.weasyprint }}/weasyprint-windows.zip -O weasyprint-windows.zip
+        mkdir weasyprint-windows
+        unzip weasyprint-windows.zip -d weasyprint-windows
+        mkdir pack/win-x64
+        cp weasyprint-windows/dist/weasyprint.exe pack/win-x64
+        cp weasyprint-windows/LICENSE pack/win-x64
+
+    - name: Generate SBOM
+      run: >
+        dotnet sbom-tool generate
+        -b pack
+        -pn DemaConsulting.WeasyprintTool
+        -pv ${{ inputs.version }}
+        -ps DemaConsulting
+        -nsb https://DemaConsulting.com/WeasyprintTool
+        -li true
+        -pm true
+
+    - name: Enhance SBOM
+      shell: bash
+      run: |
+        dotnet spdx-tool run-workflow spdx-workflow.yaml weasyprint-version=${{ inputs.weasyprint }}
+
+    - name: Create Dotnet Tool
+      run: |
+        cd pack
+        nuget pack -Version ${{ inputs.version }}
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-artifacts
+        path: |
+          pack/*.nupkg
+          pack/_manifest/spdx_2.2/*.*
+    
