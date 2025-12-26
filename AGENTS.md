@@ -65,6 +65,7 @@ Before completing any task, always run these quality checks:
 3. **Build Verification**: Check that workflows pass
    - Quality Checks job should pass
    - Build job should pass
+   - Test job should pass (validates package on Windows with .NET 8, 9, and 10)
 
 ### Testing Changes
 
@@ -88,6 +89,7 @@ The project uses GitHub Actions workflows:
    - Downloads Weasyprint binaries
    - Generates SBOM (Software Bill of Materials)
    - Creates NuGet package
+   - Tests the package on Windows with .NET 8, 9, and 10
 3. **release.yaml** - Handles releases
    - Creates releases with proper versioning
 
