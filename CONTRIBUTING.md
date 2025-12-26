@@ -86,7 +86,11 @@ Before submitting a pull request:
 3. **Build**: Ensure the project builds successfully
 4. **Testing**: Test your changes thoroughly
 
-The CI pipeline will automatically run these checks on your pull request.
+The CI pipeline will automatically run these checks on your pull request, including:
+
+- Quality checks (spelling and markdown linting)
+- Build verification
+- Package testing on Windows with .NET 8, 9, and 10
 
 ### Commit Messages
 
@@ -102,6 +106,7 @@ WeasyprintTool uses GitHub Actions for building. The build process:
 1. Downloads the DotnetToolWrapper
 2. Downloads Weasyprint binaries
 3. Creates the NuGet package
+4. Tests the package on Windows with .NET 8, 9, and 10
 
 To test the build locally, you can examine the workflow files in `.github/workflows/`.
 

@@ -76,4 +76,40 @@ jobs:
         path: |
           pack/*.nupkg
           pack/_manifest/spdx_2.2/*.*
+
+  test:
+    name: Test Package
+    needs: build
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        dotnet-version: ['8.x', '9.x', '10.x']
+    steps:
+    
+    - name: Setup dotnet
+      uses: actions/setup-dotnet@v5
+      with:
+        dotnet-version: ${{ matrix.dotnet-version }}
+
+    - name: Download Artifacts
+      uses: actions/download-artifact@v6
+      with:
+        name: build-artifacts
+        path: artifacts
+
+    - name: Install Package
+      shell: pwsh
+      run: |
+        $nupkg = Get-ChildItem -Path artifacts -Filter "*.nupkg" | Select-Object -First 1
+        dotnet tool install --global --add-source artifacts DemaConsulting.WeasyprintTool
+
+    - name: Test Weasyprint Tool
+      shell: pwsh
+      run: |
+        weasyprint --help
+        if ($LASTEXITCODE -ne 0) {
+          Write-Error "Weasyprint tool failed with exit code $LASTEXITCODE"
+          exit 1
+        }
+        Write-Host "Weasyprint tool executed successfully"
     
