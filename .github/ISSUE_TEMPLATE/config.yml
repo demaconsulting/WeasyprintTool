@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 📚 Documentation
+    url: https://github.com/demaconsulting/WeasyprintTool/blob/main/README.md
+    about: Check the documentation for usage instructions
+  - name: 💬 Discussions
+    url: https://github.com/demaconsulting/WeasyprintTool/discussions
+    about: Ask questions and discuss ideas with the community
+  - name: 🌐 Weasyprint Documentation
+    url: https://doc.courtbouillon.org/weasyprint/stable/
+    about: Official Weasyprint documentation

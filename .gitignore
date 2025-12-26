@@ -1,0 +1,21 @@
+# Node modules (for quality checks)
+node_modules/
+
+# Build artifacts
+*.nupkg
+DotnetToolWrapper/
+weasyprint-windows/
+pack/win-x64/
+pack/_manifest/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates

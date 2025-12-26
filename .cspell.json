@@ -1,0 +1,42 @@
+{
+  "version": "0.2",
+  "language": "en",
+  "words": [
+    "DEMA",
+    "Dema",
+    "demaconsulting",
+    "DemaConsulting",
+    "dotnet",
+    "Dotnet",
+    "nuget",
+    "NuGet",
+    "nupkg",
+    "Nuget",
+    "nuspec",
+    "spdx",
+    "SBOM",
+    "weasyprint",
+    "Weasyprint",
+    "WeasyPrint",
+    "csproj",
+    "netstandard",
+    "mkdir",
+    "unzip",
+    "wget",
+    "Kozea",
+    "courtbouillon",
+    "cspell",
+    "markdownlint",
+    "newword"
+  ],
+  "ignorePaths": [
+    "node_modules",
+    ".git",
+    "*.nupkg",
+    "pack/win-x64",
+    "pack/tools",
+    "DotnetToolWrapper",
+    "weasyprint-windows",
+    "pack/_manifest"
+  ]
+}

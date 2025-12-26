@@ -3,8 +3,21 @@ name: Build
 on: [push]
 
 jobs:
+  quality-checks:
+    name: Quality Checks
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      
+      - name: Check Spelling
+        run: npx cspell "**/*.md"
+      
+      - name: Lint Markdown
+        run: npx markdownlint-cli "**/*.md"
+
   build:
     name: Build Artifacts
+    needs: quality-checks
     uses: ./.github/workflows/build.yaml
     with:
       wrapper: "1.2.0"
