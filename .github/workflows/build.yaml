@@ -101,7 +101,7 @@ jobs:
       shell: pwsh
       run: |
         $nupkg = Get-ChildItem -Path artifacts -Filter "*.nupkg" | Select-Object -First 1
-        dotnet tool install --global --add-source artifacts DemaConsulting.WeasyprintTool
+        dotnet tool install --global --add-source artifacts --version ${{ inputs.version }} DemaConsulting.WeasyprintTool
 
     - name: Test Weasyprint Tool
       shell: pwsh
