@@ -12,7 +12,7 @@ on:
         type: string
         required: true
       version:
-        description: 'Release version (67.0.0)'
+        description: 'Release version (70.0.0)'
         type: string
         required: true
       publish:
