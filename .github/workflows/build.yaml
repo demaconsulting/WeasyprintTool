@@ -41,11 +41,11 @@ jobs:
     - name: Insert Weasyprint win-x64
       shell: bash
       run: |
-        wget https://github.com/Kozea/WeasyPrint/releases/download/v${{ inputs.weasyprint }}/weasyprint-windows.zip -O weasyprint-windows.zip
+        wget https://github.com/Kozea/WeasyPrint/releases/download/v${{ inputs.weasyprint }}/weasyprint-windows-onedir.zip -O weasyprint-windows.zip
         mkdir weasyprint-windows
         unzip weasyprint-windows.zip -d weasyprint-windows
         mkdir pack/win-x64
-        cp weasyprint-windows/dist/weasyprint.exe pack/win-x64
+        cp -r weasyprint-windows/onedir/weasyprint/. pack/win-x64
         cp weasyprint-windows/LICENSE pack/win-x64
 
     - name: Generate SBOM
