@@ -19,3 +19,6 @@ Thumbs.db
 *.user
 *.userosscache
 *.sln.docstates
+
+# Agent working logs (transient, never committed)
+.agent-logs/
